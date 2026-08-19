@@ -1,6 +1,6 @@
 // src/services/mention.service.ts
-import { RawMention, CleanedMention } from "../types/mention";
-import { bulkInsertMentions } from "../models/mention";
+import { RawMention, CleanedMention, SearchFilters, PaginatedMentions } from "../types/mention";
+import { bulkInsertMentions, getMentionsQuery } from "../models/mention";
 
 export const processBulkIngest = async (rawMentions: RawMention[]): Promise<void> => {
     const cleanedData: CleanedMention[] = rawMentions.map((m) => {
@@ -46,4 +46,30 @@ export const processBulkIngest = async (rawMentions: RawMention[]): Promise<void
 
     // post clean data
     await bulkInsertMentions(cleanedData);
+};
+
+export const searchMentions = async (query: any): Promise<PaginatedMentions> => {
+    // Tentukan default pagination[cite: 3]
+    const page = parseInt(query.page as string, 10) || 1;
+    const limit = parseInt(query.limit as string, 10) || 10;
+    const offset = (page - 1) * limit;
+
+    const filters: SearchFilters = {
+        q: query.q as string,
+        source: query.source as string,
+        from: query.from as string,
+        to: query.to as string,
+    };
+
+    const result = await getMentionsQuery(filters, limit, offset);
+
+    return {
+        data: result.data as CleanedMention[],
+        meta: {
+            total: result.total,
+            page: page,
+            limit: limit,
+            total_pages: Math.ceil(result.total / limit)
+        }
+    };
 };

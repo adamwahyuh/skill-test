@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { processBulkIngest } from "../../../services/mention";
+import { processBulkIngest, searchMentions } from "../../../services/mention";
 import { BadRequestError } from "../../../errors/AppError";
 
 export const bulkIngest = async (req: Request, res: Response) => {
@@ -21,5 +21,15 @@ export const bulkIngest = async (req: Request, res: Response) => {
         success: true,
         message: "Bulk ingestion processed successfully",
         data : data
+    });
+};
+
+export const getMentions = async (req: Request, res: Response) => {
+    const result = await searchMentions(req.query);
+
+    res.status(200).json({
+        success: true,
+        data: result.data,
+        meta: result.meta
     });
 };
