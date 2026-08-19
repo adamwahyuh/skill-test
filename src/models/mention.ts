@@ -23,8 +23,11 @@ export const getMentionsQuery = async (filters: SearchFilters, limit: number, of
 
     // filter Kata Kunci ?q
     if (filters.q) {
-        whereClauses.push(`to_tsvector('english', coalesce(title, '') || ' ' || coalesce(content, '')) @@ plainto_tsquery('english', $${paramIndex})`);
-        values.push(filters.q);
+        whereClauses.push(`(
+            title ILIKE $${paramIndex}
+            OR content ILIKE $${paramIndex}
+        )`);
+        values.push(`%${filters.q}%`);
         paramIndex++;
     }
 
@@ -77,4 +80,28 @@ export const getMentionsQuery = async (filters: SearchFilters, limit: number, of
         data: dataResult.rows,
         total: parseInt(countResult.rows[0].count, 10)
     };
+};
+
+export const getStatsBySourceQuery = async () => {
+    const query = `
+        SELECT source AS label, COUNT(*)::int AS count
+        FROM mentions
+        GROUP BY source
+        ORDER BY count DESC;
+    `;
+    const result = await db.query(query);
+    return result.rows;
+};
+
+export const getStatsByDayQuery = async () => {
+    // string format YYYY-MM-DD, abaikan data yang tanggalnya null
+    const query = `
+        SELECT TO_CHAR(published_at, 'YYYY-MM-DD') AS label, COUNT(*)::int AS count
+        FROM mentions
+        WHERE published_at IS NOT NULL
+        GROUP BY label
+        ORDER BY label ASC;
+    `;
+    const result = await db.query(query);
+    return result.rows;
 };

@@ -6,6 +6,6 @@ const db : object = new Pool({
     port : Number(process.env.PGPORT),
     user : process.env.PGUSER,
     password : process.env.PGPASSWORD,
-    database : process.env.PGNAME,
+    database : process.env.PGDATABASE,
 })
 export default db

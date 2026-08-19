@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { processBulkIngest, searchMentions } from "../../../services/mention";
+import { getStats as getMentionStats, processBulkIngest, searchMentions } from "../../../services/mention";
 import { BadRequestError } from "../../../errors/AppError";
 
 export const bulkIngest = async (req: Request, res: Response) => {
@@ -33,3 +33,14 @@ export const getMentions = async (req: Request, res: Response) => {
         meta: result.meta
     });
 };
+
+export const getStatsController = async(req : Request, res : Response) => {
+    const groupBy = req.query.group_by as string | undefined;
+
+    const data : object = await getMentionStats(groupBy);
+
+    res.status(200).json({
+        success: true,
+        data: data
+    });
+}

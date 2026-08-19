@@ -36,3 +36,8 @@ export interface PaginatedMentions {
         total_pages: number;
     };
 }
+
+export interface StatItem {
+    label : string;
+    count : number;
+}

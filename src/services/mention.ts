@@ -1,6 +1,7 @@
 // src/services/mention.service.ts
 import { RawMention, CleanedMention, SearchFilters, PaginatedMentions } from "../types/mention";
-import { bulkInsertMentions, getMentionsQuery } from "../models/mention";
+import { bulkInsertMentions, getMentionsQuery, getStatsByDayQuery, getStatsBySourceQuery } from "../models/mention";
+import { BadRequestError } from "../errors/AppError";
 
 export const processBulkIngest = async (rawMentions: RawMention[]): Promise<void> => {
     const cleanedData: CleanedMention[] = rawMentions.map((m) => {
@@ -73,3 +74,17 @@ export const searchMentions = async (query: any): Promise<PaginatedMentions> => 
         }
     };
 };
+
+export const getStats = async(groupBy : string | undefined) => {
+    if (!groupBy){
+        throw new BadRequestError("Query parameter 'group_by' is required. Use 'source' or 'day'.");
+    }
+
+    if (groupBy === "source"){
+        return await getStatsBySourceQuery();
+    } else if (groupBy === "day"){
+        return await getStatsByDayQuery();
+    } else{
+        throw new BadRequestError("Invalid 'group_by' value. Use 'source' or 'day'.");
+    }
+}
