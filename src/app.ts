@@ -3,6 +3,7 @@ import db from "./config/db";
 import express, { NextFunction, Request, Response } from "express";
 import { NotFoundError } from "./errors/AppError";
 import { errorHandler } from "./middlewares/error-handler";
+import mentionRoutes from "./app/api/mention/router";
 
 const app = express();
 
@@ -18,12 +19,12 @@ app.get("/", async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error(error);
-
         res.status(500).json({
             message: "Database connection failed",
         });
     }
 });
+app.use('/', mentionRoutes);
 
 app.use((req : Request, res : Response, next : NextFunction) => {
     next(new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`))
