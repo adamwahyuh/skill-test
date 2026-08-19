@@ -23,10 +23,7 @@ export const getMentionsQuery = async (filters: SearchFilters, limit: number, of
 
     // filter Kata Kunci ?q
     if (filters.q) {
-        whereClauses.push(`(
-            title ILIKE $${paramIndex}
-            OR content ILIKE $${paramIndex}
-        )`);
+        whereClauses.push(`to_tsvector('english', coalesce(title, '') || ' ' || coalesce(content, '')) @@ plainto_tsquery('english', $${paramIndex})`);
         values.push(`%${filters.q}%`);
         paramIndex++;
     }
