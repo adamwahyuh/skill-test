@@ -14,6 +14,15 @@ Open in
 http://127.0.0.1:3000/
 ```
 
+# App Shell
+```bash
+docker exec -it adam_skill_test_app sh
+```
+Run Test
+```bash
+npm run test
+```
+
 # Schema
 - Duplikat Data : Sesuai dengan instruksi brief, endpoint bulk ingest wajib bersifat idempoten. Saya mendefinisikan sebuah artikel sebagai "duplikat" jika memiliki URL yang sama. Dengan menerapkan constraint UNIQUE pada kolom url
 

@@ -1,25 +1,25 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: skill_test_db
+    container_name: adam_skill_test_db
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: passpostgree
-      POSTGRES_DB: skill_test_db
+      POSTGRES_DB: adam_skill_test_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d skill_test_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d adam_skill_test_db"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   app:
     build: .
-    container_name: skill_test_app
+    container_name: adam_skill_test_app
     restart: always
     ports:
       - "3000:3000"
@@ -30,7 +30,7 @@ services:
       PGPORT: 5432
       PGUSER: postgres
       PGPASSWORD: passpostgree
-      PGDATABASE: skill_test_db
+      PGDATABASE: adam_skill_test_db
     depends_on:
       db:
         condition: service_healthy
