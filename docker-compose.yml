@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: skill_test_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: passpostgree
+      POSTGRES_DB: skill_test_db
+    ports:
+      - "5439:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d skill_test_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: skill_test_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      APP_PORT: 3000
+      APP_HOST: 0.0.0.0
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: passpostgree
+      PGDATABASE: skill_test_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
