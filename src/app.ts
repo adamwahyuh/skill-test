@@ -1,6 +1,8 @@
 import "dotenv/config";
 import db from "./config/db";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
+import { NotFoundError } from "./errors/AppError";
+import { errorHandler } from "./middlewares/error-handler";
 
 const app = express();
 
@@ -22,5 +24,10 @@ app.get("/", async (req: Request, res: Response) => {
         });
     }
 });
+
+app.use((req : Request, res : Response, next : NextFunction) => {
+    next(new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`))
+})
+app.use(errorHandler)
 
 export default app;
